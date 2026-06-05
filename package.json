@@ -1,0 +1,16 @@
+{
+  "name": "scriptable-widgets",
+  "version": "1.0.0",
+  "description": "> A collection of simple and useful **Scriptable** widgets for iOS, built with JavaScript.",
+  "main": "habitTrackerWidget.js",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "jsdom": "^24.1.3"
+  }
+}
