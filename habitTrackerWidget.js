@@ -1,7 +1,7 @@
 // WORKOUT JOURNEY CARD — fixed-cycle (local storage)
 // Today = leftmost; grid goes forward ~1 year (7x52).
 // Past done = green, past missed = white, future = grey; today has a ring.
-// Tap anywhere toggles TODAY only.
+// Tap always opens the logger; undo is handled inside the logger.
 
 //////////////////// APPEARANCE ////////////////////
 const BG         = new Color("#242426");
@@ -20,6 +20,8 @@ const TITLE_ICON   = "dumbbell.fill";
 const ROWS = 7, COLS = 52;
 const DOT = 5, GAP = 2;
 const TOP_PAD = 10, TICK_H = 4;
+
+const LOGGER_SCRIPT = "workoutLogger";  
 ////////////////////////////////////////////////////
 
 // ---------- date helpers ----------
@@ -85,7 +87,6 @@ let indexToday = daysBetween(cycleStart, t);
 if (indexToday >= TOTAL) {
   cycleStart = t;
   store.data._meta[META_KEY] = dayKey(cycleStart);
-  // keep only entries within new cycle
   const kept = Array.from(doneSet).filter(k => {
     const d = noon(new Date(k));
     return d >= cycleStart && daysBetween(cycleStart, d) < TOTAL;
@@ -95,15 +96,6 @@ if (indexToday >= TOTAL) {
   indexToday = 0;
 }
 
-// toggle TODAY via tap
-if (args.queryParameters.toggle === "1") {
-  const k = dayKey(t);
-  if (doneSet.has(k)) doneSet.delete(k); else doneSet.add(k);
-  store.data[HABIT] = Array.from(doneSet).sort();
-  saveStore(store);
-}
-
-// streak within this cycle
 function currentStreak(){
   let s=0, d=t;
   while (d >= cycleStart && doneSet.has(dayKey(d))) { s++; d = addDays(d,-1); }
@@ -122,7 +114,6 @@ function drawFixedCycleGrid(){
   dc.opaque = false;
   dc.respectScreenScale = true;
 
-  // month ticks relative to cycleStart
   for (let i=0;i<TOTAL;i++){
     const d = addDays(cycleStart, i);
     if (d.getDate() === 1){
@@ -140,7 +131,7 @@ function drawFixedCycleGrid(){
     const x = c*(DOT+GAP);
     const y = TOP_PAD + TICK_H + 6 + r*(DOT+GAP);
 
-    let fill = DOT_FUTURE; // future
+    let fill = DOT_FUTURE;
     if (d.getTime() < t.getTime()) {
       fill = doneSet.has(dayKey(d)) ? DOT_DONE : DOT_MISS;
     } else if (dayKey(d) === dayKey(t)) {
@@ -191,9 +182,9 @@ const streakTxt = bottom.addText(`${streak} day streak`);
 streakTxt.textColor = SUB;
 streakTxt.font = Font.semiboldSystemFont(13);
 
-// tap anywhere -> toggle TODAY
-const runName = Script.name();
-w.url = `scriptable:///run?scriptName=${encodeURIComponent(runName)}&toggle=1`;
+// Always open the logger — it handles all states (fresh, partial, done, undo).
+w.url = `scriptable:///run?scriptName=${encodeURIComponent(LOGGER_SCRIPT)}`;
+w.refreshAfterDate = new Date(); // tell iOS to redraw as soon as it can
 
 if (!config.runsInWidget) await w.presentMedium();
 Script.setWidget(w);
