@@ -5,7 +5,8 @@
 //   log    — partial session exists, or user tapped "Log session": checklist
 //   review — day already marked done: shows saved session + Remove done button
 
-//////////////////// CONFIG ////////////////////
+//////////////// EDIT ME — CONFIG ////////////////
+// Storage key in log.json — must match HABIT in habitTrackerWidget.js.
 const HABIT = "workout";
 
 // "Done" rule: need at least max(MIN_DONE, ceil(items/DIVISOR)) checked,
@@ -13,42 +14,42 @@ const HABIT = "workout";
 const MIN_DONE = 2;
 const DIVISOR  = 3;
 
-// Templates — edit freely. Order = display order in the picker.
+// Example templates — edit to match your own program. Order = display order in the picker.
 const TEMPLATES = {
   "Upper Body A": [
-    { name: "Dumbbell floor press",      meta: "4 × 8–12  ·  10–17.5 kg ea" },
-    { name: "One-arm dumbbell row",      meta: "4 × 10–12 ea side  ·  15–25 kg" },
-    { name: "Dumbbell shoulder press",   meta: "3 × 8–12  ·  7.5–12.5 kg ea" },
-    { name: "Dumbbell lateral raise",    meta: "4 × 12–20  ·  3–7.5 kg ea" },
+    { name: "Dumbbell floor press",      meta: "4 × 8–12  ·  moderate DBs" },
+    { name: "One-arm dumbbell row",      meta: "4 × 10–12 ea side  ·  moderate–heavy DB" },
+    { name: "Dumbbell shoulder press",   meta: "3 × 8–12  ·  light–moderate DBs" },
+    { name: "Dumbbell lateral raise",    meta: "4 × 12–20  ·  light DBs" },
     { name: "Push-ups",                  meta: "3 × near failure  ·  bodyweight" },
-    { name: "Dumbbell bicep curl",       meta: "3 × 10–15  ·  7.5–12.5 kg ea" },
-    { name: "Overhead tricep extension", meta: "3 × 10–15  ·  10–20 kg total" },
+    { name: "Dumbbell bicep curl",       meta: "3 × 10–15  ·  light–moderate DBs" },
+    { name: "Overhead tricep extension", meta: "3 × 10–15  ·  one moderate DB" },
   ],
   "Lower Body + Core": [
-    { name: "Barbell deadlift",          meta: "4 × 5–8  ·  40–60 kg total" },
-    { name: "Goblet squat",              meta: "4 × 10–15  ·  15–30 kg" },
-    { name: "Dumbbell Romanian deadlift",meta: "3 × 8–12  ·  12.5–25 kg ea" },
-    { name: "Reverse lunges",            meta: "3 × 10 ea leg  ·  BW–10 kg ea" },
-    { name: "Standing calf raises",      meta: "3 × 15–25  ·  BW or 10–20 kg" },
+    { name: "Barbell deadlift",          meta: "4 × 5–8  ·  moderate barbell" },
+    { name: "Goblet squat",              meta: "4 × 10–15  ·  moderate DB" },
+    { name: "Dumbbell Romanian deadlift",meta: "3 × 8–12  ·  moderate DBs" },
+    { name: "Reverse lunges",            meta: "3 × 10 ea leg  ·  BW or light DBs" },
+    { name: "Standing calf raises",      meta: "3 × 15–25  ·  BW or light DBs" },
     { name: "Plank",                     meta: "3 × 30–60 sec  ·  bodyweight" },
     { name: "Leg raises",                meta: "3 × 10–15  ·  bodyweight" },
   ],
   "Upper Body B": [
-    { name: "Bent-over row (bar/DB)",    meta: "4 × 8–12  ·  bar 30–50 kg / DB 15–25 ea" },
+    { name: "Bent-over row (bar/DB)",    meta: "4 × 8–12  ·  moderate bar or DBs" },
     { name: "Feet-elevated push-ups",    meta: "4 × 8–15  ·  bodyweight" },
-    { name: "Dumbbell shoulder press",   meta: "3 × 8–12  ·  7.5–12.5 kg ea" },
-    { name: "Dumbbell lateral raise",    meta: "4 × 15–20  ·  3–7.5 kg ea" },
-    { name: "Rear delt raise",           meta: "3 × 12–20  ·  3–7.5 kg ea" },
-    { name: "Hammer curl",               meta: "3 × 10–15  ·  7.5–15 kg ea" },
+    { name: "Dumbbell shoulder press",   meta: "3 × 8–12  ·  light–moderate DBs" },
+    { name: "Dumbbell lateral raise",    meta: "4 × 15–20  ·  light DBs" },
+    { name: "Rear delt raise",           meta: "3 × 12–20  ·  light DBs" },
+    { name: "Hammer curl",               meta: "3 × 10–15  ·  light–moderate DBs" },
     { name: "Close-grip push-ups",       meta: "3 × 8–15  ·  bodyweight" },
   ],
   "Lower + Chest/Arms": [
-    { name: "Dumbbell Romanian deadlift",meta: "4 × 8–12  ·  12.5–25 kg ea" },
-    { name: "Bulgarian split squat",     meta: "3 × 8–12 ea leg  ·  BW–10 kg ea" },
-    { name: "Dumbbell floor press",      meta: "4 × 8–12  ·  10–17.5 kg ea" },
-    { name: "Dumbbell squeeze press",    meta: "3 × 10–15  ·  7.5–15 kg ea" },
-    { name: "Dumbbell bicep curl",       meta: "3 × 10–15  ·  7.5–12.5 kg ea" },
-    { name: "Overhead tricep extension", meta: "3 × 10–15  ·  10–20 kg total" },
+    { name: "Dumbbell Romanian deadlift",meta: "4 × 8–12  ·  moderate DBs" },
+    { name: "Bulgarian split squat",     meta: "3 × 8–12 ea leg  ·  BW or light DBs" },
+    { name: "Dumbbell floor press",      meta: "4 × 8–12  ·  moderate DBs" },
+    { name: "Dumbbell squeeze press",    meta: "3 × 10–15  ·  light–moderate DBs" },
+    { name: "Dumbbell bicep curl",       meta: "3 × 10–15  ·  light–moderate DBs" },
+    { name: "Overhead tricep extension", meta: "3 × 10–15  ·  one moderate DB" },
     { name: "Side plank",                meta: "3 × 30–45 sec ea side  ·  BW" },
   ],
   "Sport / Cardio": [

@@ -3,7 +3,7 @@
 // Past done = green, past missed = white, future = grey; today has a ring.
 // Tap always opens the logger; undo is handled inside the logger.
 
-//////////////////// APPEARANCE ////////////////////
+//////////////// EDIT ME — CONFIG ////////////////
 const BG         = new Color("#242426");
 const DOT_FUTURE = new Color("#8f9399", 0.22);
 const DOT_DONE   = new Color("#2ecc71");
@@ -16,12 +16,13 @@ const TITLE        = "workout";
 const TITLE_LOWER  = true;
 const TITLE_ICON   = "dumbbell.fill";
 
-// Grid
+// Grid — ROWS × COLS is the cycle length in days (7 × 52 = 364, ~1 year).
 const ROWS = 7, COLS = 52;
 const DOT = 5, GAP = 2;
 const TOP_PAD = 10, TICK_H = 4;
 
-const LOGGER_SCRIPT = "workoutLogger";  
+// Must match the logger's script name in Scriptable, or tapping the widget breaks.
+const LOGGER_SCRIPT = "workoutLogger";
 ////////////////////////////////////////////////////
 
 // ---------- date helpers ----------
@@ -31,6 +32,7 @@ function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return noo
 function dayKey(d){ const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), a=String(d.getDate()).padStart(2,"0"); return `${y}-${m}-${a}`; }
 function daysBetween(a,b){ return Math.floor((noon(b)-noon(a))/(24*3600*1000)); }
 
+// Also config: storage key in log.json — must match HABIT in workoutLogger.js.
 const HABIT = "workout";
 const LOCAL = FileManager.local();
 const localDir  = LOCAL.joinPath(LOCAL.documentsDirectory(),"Habits");
